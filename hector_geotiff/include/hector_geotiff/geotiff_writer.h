@@ -36,9 +36,10 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/MapMetaData.h>
 
-#include <QImage>
-#include <QApplication>
-#include <QFont>
+#include <QtGui/QImage>
+#include <QtGui/QApplication>
+#include <QtGui/QFont>
+#include <QtGui/QPen>
 
 #include <hector_map_tools/HectorMapTools.h>
 
@@ -49,7 +50,7 @@ namespace hector_geotiff{
 class GeotiffWriter : public MapWriterInterface
 {
   public:
-  explicit GeotiffWriter(bool useCheckerboardCacheIn = false);
+  GeotiffWriter(bool useCheckerboardCacheIn = false);
   virtual ~GeotiffWriter();
 
   //setUsePrecalcGrid(bool usePrecalc, const Eigen::Vector2f& size);
@@ -62,7 +63,7 @@ class GeotiffWriter : public MapWriterInterface
   bool setupTransforms(const nav_msgs::OccupancyGrid& map);
   void drawBackgroundCheckerboard();
   void drawMap(const nav_msgs::OccupancyGrid& map, bool draw_explored_space_grid = true);
-  void drawObjectOfInterest(const Eigen::Vector2f& coords, const std::string& txt, const Color& color, const Shape& shape);
+  void drawObjectOfInterest(const Eigen::Vector2f& coords, const std::string& txt, const Color& color);
   inline virtual void drawPath(const Eigen::Vector3f& start, const std::vector<Eigen::Vector2f>& points){
       drawPath(start, points, 120,0,240);
   }
@@ -79,17 +80,17 @@ protected:
   void drawArrow(QPainter& painter);
   void drawCoordSystem(QPainter& painter);
 
-  float resolution = std::numeric_limits<float>::quiet_NaN();
+  float resolution;
   Eigen::Vector2f origin;
 
-  int resolutionFactor = 3;
-  float resolutionFactorf = std::numeric_limits<float>::quiet_NaN();
+  int resolutionFactor;
+  float resolutionFactorf;
 
   bool useCheckerboardCache;
   bool use_utc_time_suffix_;
 
-  float pixelsPerMapMeter = std::numeric_limits<float>::quiet_NaN();
-  float pixelsPerGeoTiffMeter = std::numeric_limits<float>::quiet_NaN();
+  float pixelsPerMapMeter;
+  float pixelsPerGeoTiffMeter;
 
   Eigen::Vector2i minCoordsMap;
   Eigen::Vector2i maxCoordsMap;
@@ -116,7 +117,6 @@ protected:
   QImage image;
   QImage checkerboard_cache;
   QApplication* app;
-  QString font_family_;
   QFont map_draw_font_;
 
   HectorMapTools::CoordinateTransformer<float> world_map_transformer_;
@@ -124,6 +124,9 @@ protected:
   HectorMapTools::CoordinateTransformer<float> world_geo_transformer_;
 
   nav_msgs::MapMetaData cached_map_meta_data_;
+
+  int fake_argc_;
+  char** fake_argv_;
 };
 
 }
